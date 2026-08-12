@@ -49,6 +49,21 @@ docs/superpowers/     设计与详细任务计划
 SPEC.md / PLAN.md     当前规格与完成记录
 ```
 
+GitHub Actions 会在每次 push 和 pull request 自动执行单元测试与生产构建；`.gitlab-ci.yml` 保留 `unit-test` job 以满足课程提交要求。
+
+公开演示地址：<https://pawpal-ai4se-final.vercel.app>。Vercel 环境是无状态的，线上站点仅作功能展示；需要验证 JSON 持久化时请使用本地 Docker。
+
+## 目录结构
+
+```text
+src/app/              页面与 API 路由
+src/lib/store/        JSON 存储与业务仓储层
+tests/unit/           核心单元测试
+data/                 本地演示数据（不提交）
+docs/superpowers/     设计与详细任务计划
+SPEC.md / PLAN.md     当前规格与完成记录
+```
+
 ## 已知限制
 
 - 尚未接入真实账号、邀请和多设备协作；这些需要数据库服务恢复后实现。
