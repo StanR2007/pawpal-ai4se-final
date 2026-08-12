@@ -1,0 +1,22 @@
+"use client";
+
+import { useState } from "react";
+
+type Dashboard = { household: { id: string; name: string }; pets: Array<{ id: string; name: string; species: string; emoji: string }>; tasks: Array<{ id: string; title: string; dueAt: string; status: "PENDING" | "COMPLETED" }>; growthEvents: Array<{ id: string; title: string; note: string }> };
+
+async function api(path: string, options?: RequestInit) {
+  const response = await fetch(path, { headers: { "content-type": "application/json" }, ...options });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error ?? "操作失败，请稍后重试。" );
+  return data;
+}
+
+export function DashboardView({ initial }: { initial: Dashboard }) {
+  const [data, setData] = useState(initial); const [message, setMessage] = useState(""); const [busy, setBusy] = useState("");
+  const refresh = async () => setData(await api("/api/demo"));
+  const complete = async (id: string) => { setBusy(id); try { await api(`/api/tasks/${id}/complete`, { method: "POST" }); await refresh(); setMessage("已记录这份照护，家人都会看到。 ✦"); } catch (error) { setMessage(error instanceof Error ? error.message : "操作失败" ); } finally { setBusy(""); } };
+  const addPet = async (form: HTMLFormElement) => { const fields = new FormData(form); setBusy("pet"); try { await api("/api/pets", { method: "POST", body: JSON.stringify({ householdId: data.household.id, name: fields.get("name"), species: fields.get("species"), emoji: fields.get("emoji") }) }); form.reset(); await refresh(); setMessage("新成员已加入阳光小屋。 🐾"); } catch (error) { setMessage(error instanceof Error ? error.message : "操作失败"); } finally { setBusy(""); } };
+  const addMoment = async (form: HTMLFormElement) => { const fields = new FormData(form); setBusy("moment"); try { await api("/api/timeline", { method: "POST", body: JSON.stringify({ householdId: data.household.id, petId: fields.get("petId"), title: fields.get("title"), note: fields.get("note") }) }); form.reset(); await refresh(); setMessage("这一刻已经被好好收藏。 ✦"); } catch (error) { setMessage(error instanceof Error ? error.message : "操作失败"); } finally { setBusy(""); } };
+  const pending = data.tasks.filter((task) => task.status === "PENDING").length;
+  return <main className="shell"><header className="hero"><p className="eyebrow">PAWPAL · 共同照护</p><h1>把每一份小小的爱，<br />好好记录下来。</h1><p className="intro">{data.household.name}的今天，有 {pending} 件温柔待办。</p></header>{message && <p className="notice">{message}</p>}<section className="section"><div className="section-heading"><h2>毛孩子们</h2><span>一起长大</span></div><div className="pet-grid">{data.pets.map((pet) => <article className="pet-card" key={pet.id}><span>{pet.emoji}</span><div><h3>{pet.name}</h3><p>{pet.species} · 阳光小屋成员</p></div></article>)}</div><form className="inline-form" onSubmit={(event) => { event.preventDefault(); void addPet(event.currentTarget); }}><input name="emoji" defaultValue="🐾" aria-label="宠物表情" /><input name="name" placeholder="新成员的名字" required /><input name="species" placeholder="猫咪、狗狗……" required /><button disabled={busy === "pet"}>{busy === "pet" ? "加入中…" : "添加宠物"}</button></form></section><section className="section"><div className="section-heading"><h2>今日照护</h2><span>{pending} 待完成</span></div><div className="task-list">{data.tasks.map((task) => <article className={`task ${task.status.toLowerCase()}`} key={task.id}><span>{task.status === "COMPLETED" ? "✓" : "○"}</span><div className="task-content"><h3>{task.title}</h3><p>{new Date(task.dueAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}{task.status === "COMPLETED" ? " · 已完成" : " · 等待认领"}</p></div>{task.status === "PENDING" && <button className="soft-button" onClick={() => void complete(task.id)} disabled={busy === task.id}>{busy === task.id ? "记录中…" : "完成"}</button>}</article>)}</div></section><section className="section"><div className="section-heading"><h2>成长瞬间</h2><span>今天的收藏</span></div><div className="moments">{data.growthEvents.map((event) => <article key={event.id}><span>✦</span><div><h3>{event.title}</h3><p>{event.note}</p></div></article>)}</div><form className="moment-form" onSubmit={(event) => { event.preventDefault(); void addMoment(event.currentTarget); }}><select name="petId">{data.pets.map((pet) => <option value={pet.id} key={pet.id}>{pet.emoji} {pet.name}</option>)}</select><input name="title" placeholder="给这一刻起个名字" required /><textarea name="note" placeholder="发生了什么温暖的小事？" required /><button disabled={busy === "moment"}>{busy === "moment" ? "收藏中…" : "记录这一刻"}</button></form></section></main>;
+}

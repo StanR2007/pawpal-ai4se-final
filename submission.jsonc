@@ -1,0 +1,8 @@
+{
+  // 已按课程提交模板填写；repo_url 与 deploy_release_url 在仓库创建/部署后替换。
+  "id": "251250071",
+  "name": "刘睿祺",
+  "repo_url": "https://github.com/StanR2007/pawpal-ai4se-final",
+  "is_deployed": false,
+  "deploy_release_url": "https://github.com/StanR2007/pawpal-ai4se-final/releases"
+}

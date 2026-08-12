@@ -1,0 +1,6 @@
+image: node:22-alpine
+
+unit-test:
+  script:
+    - npm install
+    - npm test
