@@ -1,8 +1,8 @@
 {
-  // 已按课程提交模板填写；repo_url 与 deploy_release_url 在仓库创建/部署后替换。
+  // 已按课程提交模板填写；部署地址为公开 Web UI。
   "id": "251250071",
   "name": "刘睿祺",
   "repo_url": "https://github.com/StanR2007/pawpal-ai4se-final",
-  "is_deployed": false,
-  "deploy_release_url": "https://github.com/StanR2007/pawpal-ai4se-final/releases"
+  "is_deployed": true,
+  "deploy_release_url": "https://pawpal-ai4se-final.vercel.app"
 }
