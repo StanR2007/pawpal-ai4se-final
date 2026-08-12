@@ -26,7 +26,7 @@ pnpm dev
 
 演示版不保存真实密码、第三方 API Key 或邀请链接明文；请不要把真实隐私数据提交到仓库。
 
-## 测试与分发
+## 测试、CI 与分发
 
 ```bash
 pnpm test
@@ -34,7 +34,20 @@ pnpm build
 docker compose up --build
 ```
 
-Docker 将 `data/` 作为持久化卷挂载。当前 Windows 工作树曾遇到 pnpm/Vitest 链接与 npm registry 下载限制；CI 会从锁文件重新安装依赖后运行测试。
+Docker 将 `data/` 作为持久化卷挂载。GitHub Actions 会在每次 push 和 pull request 自动执行单元测试与生产构建；`.gitlab-ci.yml` 保留 `unit-test` job 以满足课程提交要求。
+
+公开演示地址：<https://pawpal-ai4se-final.vercel.app>。Vercel 环境是无状态的，线上站点仅作功能展示；需要验证 JSON 持久化时请使用本地 Docker。
+
+## 目录结构
+
+```text
+src/app/              页面与 API 路由
+src/lib/store/        JSON 存储与业务仓储层
+tests/unit/           核心单元测试
+data/                 本地演示数据（不提交）
+docs/superpowers/     设计与详细任务计划
+SPEC.md / PLAN.md     当前规格与完成记录
+```
 
 ## 已知限制
 
